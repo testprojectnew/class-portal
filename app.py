@@ -427,7 +427,7 @@ def login():
 
         <button type="submit">Đăng nhập</button>
     </form>
-    <p class="muted">Web test</p>
+    <p class="muted">Tài khoản thử nghiệm ban đầu: admin / admin12345</p>
     """
 
     return render_page("Đăng nhập", content)
