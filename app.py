@@ -112,7 +112,7 @@ def init_db():
             VALUES (?, ?, ?, ?)
         """, (
             "admin",
-            generate_password_hash("admin12345"),
+            generate_password_hash("A5class"),
             "admin",
             json.dumps({key: True for key in PERMISSIONS})
         ))
@@ -427,7 +427,6 @@ def login():
 
         <button type="submit">Đăng nhập</button>
     </form>
-    <p class="muted">Tài khoản thử nghiệm ban đầu: admin / admin12345</p>
     """
 
     return render_page("Đăng nhập", content)
