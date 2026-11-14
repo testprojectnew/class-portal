@@ -112,7 +112,7 @@ def init_db():
             VALUES (?, ?, ?, ?)
         """, (
             "admin",
-            generate_password_hash("A5class"),
+            generate_password_hash("admin12345"),
             "admin",
             json.dumps({key: True for key in PERMISSIONS})
         ))
