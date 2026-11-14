@@ -1105,13 +1105,15 @@ def accounts():
     return render_page("Quản lý tài khoản", form)
 
 
+
 # ==========================================
 # 13. KHỞI ĐỘNG WEBSITE
 # ==========================================
 
-if __name__ == "__main__":
-    init_db()
+# Tạo cơ sở dữ liệu khi website được chạy bằng Gunicorn trên Render
+init_db()
 
+if __name__ == "__main__":
     print("================================")
     print("CLASS PORTAL đang khởi động...")
     print("Mở trình duyệt tại:")
