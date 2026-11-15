@@ -15,6 +15,8 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
 
+ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "")
+
 app.secret_key = os.environ.get(
     "SECRET_KEY",
     "class-portal-local-development-key"
@@ -106,17 +108,34 @@ def init_db():
         ("admin",)
     ).fetchone()
 
+    # Tạo hoặc cập nhật tài khoản admin bằng mật khẩu riêng trên Render
+admin = db.execute(
+    "SELECT id FROM users WHERE username = ?",
+    ("admin",)
+).fetchone()
+
+if ADMIN_PASSWORD:
     if admin is None:
         db.execute("""
             INSERT INTO users (username, password, role, permissions)
             VALUES (?, ?, ?, ?)
         """, (
             "admin",
-            generate_password_hash("admin12345"),
+            generate_password_hash(ADMIN_PASSWORD),
             "admin",
             json.dumps({key: True for key in PERMISSIONS})
         ))
+    else:
+        db.execute("""
+            UPDATE users
+            SET password = ?
+            WHERE username = ?
+        """, (
+            generate_password_hash(ADMIN_PASSWORD),
+            "admin"
+        ))
 
+    
     db.commit()
     db.close()
 
