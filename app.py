@@ -43,6 +43,7 @@ def connect_db():
     return db
 
 
+
 def init_db():
     db = connect_db()
 
@@ -102,40 +103,34 @@ def init_db():
         )
     """)
 
-    # Tạo tài khoản quản trị viên lần đầu
+    # Kiểm tra tài khoản admin
     admin = db.execute(
         "SELECT id FROM users WHERE username = ?",
         ("admin",)
     ).fetchone()
 
-    # Tạo hoặc cập nhật tài khoản admin bằng mật khẩu riêng trên Render
-admin = db.execute(
-    "SELECT id FROM users WHERE username = ?",
-    ("admin",)
-).fetchone()
+    # Tạo hoặc cập nhật mật khẩu admin từ Render
+    if ADMIN_PASSWORD:
+        if admin is None:
+            db.execute("""
+                INSERT INTO users (username, password, role, permissions)
+                VALUES (?, ?, ?, ?)
+            """, (
+                "admin",
+                generate_password_hash(ADMIN_PASSWORD),
+                "admin",
+                json.dumps({key: True for key in PERMISSIONS})
+            ))
+        else:
+            db.execute("""
+                UPDATE users
+                SET password = ?
+                WHERE username = ?
+            """, (
+                generate_password_hash(ADMIN_PASSWORD),
+                "admin"
+            ))
 
-if ADMIN_PASSWORD:
-    if admin is None:
-        db.execute("""
-            INSERT INTO users (username, password, role, permissions)
-            VALUES (?, ?, ?, ?)
-        """, (
-            "admin",
-            generate_password_hash(ADMIN_PASSWORD),
-            "admin",
-            json.dumps({key: True for key in PERMISSIONS})
-        ))
-    else:
-        db.execute("""
-            UPDATE users
-            SET password = ?
-            WHERE username = ?
-        """, (
-            generate_password_hash(ADMIN_PASSWORD),
-            "admin"
-        ))
-
-    
     db.commit()
     db.close()
 
